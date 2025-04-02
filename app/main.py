@@ -16,7 +16,7 @@ llm = OllamaLLM(model="llama3.2", base_url=OLLAMA_SERVER_URL)
 app = FastAPI()
 
 # Define a simple endpoint
-@app.get("/ask")
+@app.post("/ask")
 async def ask_question(question: str):
     try:
         response = llm.invoke(question)

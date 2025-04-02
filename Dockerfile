@@ -1,8 +1,11 @@
 # Use the official Ollama image as the base
-FROM ollama/ollama:latest
+FROM ollama/ollama:0.6.2
 
 # Install Python, pip, and bash
 RUN apt-get update && apt-get install -y python3 python3-pip bash
+
+# Pre-download the llama3.2 model during build
+RUN ollama serve & sleep 5 && ollama run llama3.2
 
 # Set working directory
 WORKDIR /app
@@ -24,4 +27,4 @@ ENV OLLAMA_SERVER_URL=http://localhost:11434
 ENTRYPOINT ["/bin/bash", "-c"]
 
 # Start Ollama server and run Uvicorn
-CMD ["ollama serve & sleep 5 && (ollama list | grep -q llama3.2 || ollama run llama3.2) && uvicorn main:app --host 0.0.0.0 --port 80"]
+CMD ["ollama serve & sleep 5 && uvicorn main:app --host 0.0.0.0 --port 80"]
