@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from langchain_ollama import OllamaLLM
 import os
 
+from pydantic import BaseModel
+
 # Load environment variables
 load_dotenv(override=True)
 
@@ -15,14 +17,23 @@ llm = OllamaLLM(model="tinyllama", base_url=OLLAMA_SERVER_URL)
 # Create FastAPI instance
 app = FastAPI()
 
-# Define a simple endpoint
+# Define a Pydantic model for the request body
+class QuestionRequest(BaseModel):
+    question: str
+
+# Define the endpoint to accept a JSON body
 @app.post("/ask")
-async def ask_question(question: str):
+async def ask_question(request: QuestionRequest):
     try:
-        response = llm.invoke(question)
+        response = llm.invoke(request.question)
         return {"response": response}
     except Exception as e:
         return {"error": str(e)}
+
+# Add a health check endpoint for debugging
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
 
 if __name__ == "__main__":
     import uvicorn
