@@ -1,20 +1,27 @@
-# Use the official Ollama Docker image as the base
+# Use the official Ollama image as the base
 FROM ollama/ollama:latest
 
-# Install Python and dependencies
-RUN apt-get update && apt-get install -y python3 python3-pip
+# Install Python, pip, and bash
+RUN apt-get update && apt-get install -y python3 python3-pip bash
+
+# Set working directory
 WORKDIR /app
+
+# Copy and install Python dependencies
 COPY app/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-# Copy your Python API code
+# Copy your FastAPI code
 COPY app/main.py .
 
-# Pull Llama3.2 model into the container (optional, or you can do this at runtime)
-RUN ollama pull llama3.2
+# Expose port 80 (Azure Web App requirement)
+EXPOSE 80
 
-# Expose the port your API will run on (e.g., 5000)
-EXPOSE 5000
+# Set environment variable for Ollama server
+ENV OLLAMA_SERVER_URL=http://localhost:11434
 
-# Start Ollama and your Python API
-CMD ["sh", "-c", "ollama serve & python3 main.py"]
+# Override the default ENTRYPOINT to use bash
+ENTRYPOINT ["/bin/bash", "-c"]
+
+# Start Ollama server and run Uvicorn
+CMD ["ollama serve & sleep 5 && (ollama list | grep -q llama3.2 || ollama run llama3.2) && uvicorn main:app --host 0.0.0.0 --port 80"]
