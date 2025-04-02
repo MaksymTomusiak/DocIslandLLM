@@ -10,7 +10,7 @@ load_dotenv(override=True)
 OLLAMA_SERVER_URL = os.getenv("OLLAMA_SERVER_URL")
 
 # Initialize the language model
-llm = OllamaLLM(model="llama3.2", base_url=OLLAMA_SERVER_URL)
+llm = OllamaLLM(model="llama3.2:1b", base_url=OLLAMA_SERVER_URL)
 
 # Create FastAPI instance
 app = FastAPI()
