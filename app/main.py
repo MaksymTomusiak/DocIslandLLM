@@ -1,8 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from langchain_ollama import OllamaLLM
 import os
-
 from pydantic import BaseModel
 
 # Load environment variables
@@ -16,6 +16,15 @@ llm = OllamaLLM(model="llama3.2", base_url=OLLAMA_SERVER_URL)
 
 # Create FastAPI instance
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust to specific origins in production (e.g., ["https://your-frontend.com"])
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows POST, GET, OPTIONS, etc.
+    allow_headers=["*"],
+)
 
 # Define a Pydantic model for the request body
 class QuestionRequest(BaseModel):
