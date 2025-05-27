@@ -5,7 +5,7 @@ FROM ollama/ollama:0.6.2
 RUN apt-get update && apt-get install -y python3 python3-pip bash
 
 # Pre-download the tinyllama model during build
-RUN ollama serve & sleep 5 && ollama run llama3.2
+RUN ollama serve & sleep 5 && ollama run llama3.2:1b
 
 # Set working directory
 WORKDIR /app
